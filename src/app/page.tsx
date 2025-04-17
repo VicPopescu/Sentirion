@@ -1,33 +1,17 @@
 import PortfolioBuilder from "@/features/portfolio-builder";
-import { Container, Stack, Typography, Box } from "@mui/material";
+import { BqPageTitle } from "@beeq/react/ssr";
 
 export default function Home() {
   return (
-    <Container
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        padding: 3,
-        maxWidth: "100%",
-      }}
-    >
-      <Stack spacing={2} alignItems="center">
-        <Typography variant="h3" component="h1" align="center" gutterBottom>
-          Portfolio Builder
-        </Typography>
+    <div className="min-h-screen flex flex-col p-3 max-w-full">
+      <div className="flex flex-col items-center space-y-4">
+        <BqPageTitle>Portfolio Builder</BqPageTitle>
         <PortfolioBuilder />
-      </Stack>
-      <Box
-        component="footer"
-        sx={{
-          mt: 4,
-          display: "flex",
-          justifyContent: "center",
-          overflowX: "hidden",
-        }}
+      </div>
+      <footer
+        className="mt-4 flex justify-center overflow-hidden"
         data-testid="page-footer"
-      ></Box>
-    </Container>
+      ></footer>
+    </div>
   );
 }

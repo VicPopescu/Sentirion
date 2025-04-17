@@ -1,13 +1,4 @@
 import Superscript from "@/components/superscript";
-import {
-  TableRow,
-  TableCell,
-  Checkbox,
-  LinearProgress,
-  IconButton,
-} from "@mui/material";
-
-import DeleteIcon from "@mui/icons-material/Delete";
 import { Indicator } from "@/lib/api/hooks/get/useFetchSymbolInsight";
 import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
 
@@ -34,54 +25,114 @@ const CustomTableRow = ({
   handleDelete,
 }: CustomTableRowProps) => {
   return (
-    <TableRow
-      hover
+    <tr
+      className={`hover:bg-gray-100 ${
+        isItemSelected ? "bg-blue-50" : "bg-white"
+      } cursor-pointer`}
       onClick={() => handleSelect(row.symbol)}
       role="checkbox"
       aria-checked={isItemSelected}
       tabIndex={-1}
       key={row.symbol}
-      selected={isItemSelected}
-      sx={{ cursor: "pointer" }}
     >
-      <TableCell padding="checkbox">
-        <Checkbox color="primary" checked={isItemSelected} />
-      </TableCell>
-      <TableCell component="th" id={labelId} scope="row" padding="none">
+      {/* Checkbox */}
+      <td className="px-4 py-2">
+        <input
+          type="checkbox"
+          className="form-checkbox text-blue-600"
+          checked={isItemSelected}
+          onChange={() => handleSelect(row.symbol)}
+        />
+      </td>
+
+      {/* Description */}
+      <td className="px-4 py-2 font-medium" id={labelId}>
         {row.description}
-      </TableCell>
-      <TableCell align="left">{row.symbol}</TableCell>
-      <TableCell align="left">{row.type}</TableCell>
-      <TableCell align="left">
-        {isLoading ? <LinearProgress /> : indicators?.bestEntry}
-        {indicators?.bestEntry && <Superscript>[AI]</Superscript>}
-      </TableCell>
-      <TableCell align="left">
-        {isLoading ? <LinearProgress /> : indicators?.risk3Y}
-        {indicators?.risk3Y && <Superscript>[AI]</Superscript>}
-      </TableCell>
-      <TableCell align="left">
-        {isLoading ? <LinearProgress /> : indicators?.estimated3Y}
-        {indicators?.estimated3Y && <Superscript>[AI]</Superscript>}
-      </TableCell>
-      <TableCell align="left">
-        {isLoading ? <LinearProgress /> : indicators?.yield}
-        {indicators?.yield && <Superscript>[AI]</Superscript>}
-      </TableCell>
-      <TableCell align="left">
-        {isLoading ? <LinearProgress /> : indicators?.sentiment}
-        {indicators?.sentiment && <Superscript>[AI]</Superscript>}
-      </TableCell>
-      <TableCell padding="checkbox">
-        <IconButton
+      </td>
+
+      {/* Symbol */}
+      <td className="px-4 py-2">{row.symbol}</td>
+
+      {/* Type */}
+      <td className="px-4 py-2">{row.type}</td>
+
+      {/* Indicators */}
+      <td className="px-4 py-2">
+        {isLoading ? (
+          <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
+        ) : (
+          <>
+            {indicators?.bestEntry}
+            {indicators?.bestEntry && <Superscript>[AI]</Superscript>}
+          </>
+        )}
+      </td>
+      <td className="px-4 py-2">
+        {isLoading ? (
+          <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
+        ) : (
+          <>
+            {indicators?.risk3Y}
+            {indicators?.risk3Y && <Superscript>[AI]</Superscript>}
+          </>
+        )}
+      </td>
+      <td className="px-4 py-2">
+        {isLoading ? (
+          <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
+        ) : (
+          <>
+            {indicators?.estimated3Y}
+            {indicators?.estimated3Y && <Superscript>[AI]</Superscript>}
+          </>
+        )}
+      </td>
+      <td className="px-4 py-2">
+        {isLoading ? (
+          <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
+        ) : (
+          <>
+            {indicators?.yield}
+            {indicators?.yield && <Superscript>[AI]</Superscript>}
+          </>
+        )}
+      </td>
+      <td className="px-4 py-2">
+        {isLoading ? (
+          <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
+        ) : (
+          <>
+            {indicators?.sentiment}
+            {indicators?.sentiment && <Superscript>[AI]</Superscript>}
+          </>
+        )}
+      </td>
+
+      {/* Delete Button */}
+      <td className="px-4 py-2">
+        <button
+          className="text-red-600 hover:text-red-800"
           aria-label="Remove symbol"
           data-testid="remove-symbol"
           onClick={(event) => handleDelete(event, row.symbol)}
         >
-          <DeleteIcon />
-        </IconButton>
-      </TableCell>
-    </TableRow>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </td>
+    </tr>
   );
 };
 

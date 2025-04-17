@@ -1,65 +1,48 @@
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Tooltip from "@mui/material/Tooltip";
-import { alpha } from "@mui/material/styles";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
-
 type EnhancedTableToolbarProps = {
   numSelected: number;
   onDeleteAll: () => void;
 };
 
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected, onDeleteAll } = props;
-
+const EnhancedTableToolbar = ({
+  numSelected,
+  onDeleteAll,
+}: EnhancedTableToolbarProps) => {
   return (
-    <Toolbar
-      sx={[
-        {
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-        },
-        numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(
-              theme.palette.primary.main,
-              theme.palette.action.activatedOpacity
-            ),
-        },
-      ]}
+    <div
+      className={`flex items-center justify-between px-4 py-2 ${
+        numSelected > 0 ? "bg-blue-100" : "bg-white"
+      }`}
     >
       {numSelected > 0 ? (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
+        <p className="text-blue-700 font-medium">{numSelected} selected</p>
       ) : (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Stocks
-        </Typography>
+        <h2 className="text-lg font-semibold text-gray-800">Stocks</h2>
       )}
       {numSelected > 0 && (
-        <Tooltip title="Remove all">
-          <IconButton
-            aria-label="Uncheck all symbols"
-            data-testid="uncheck-all-symbols"
-            onClick={() => onDeleteAll()}
+        <button
+          className="flex items-center text-red-600 hover:text-red-800"
+          aria-label="Uncheck all symbols"
+          data-testid="uncheck-all-symbols"
+          onClick={onDeleteAll}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          Remove all
+        </button>
       )}
-    </Toolbar>
+    </div>
   );
 };
 

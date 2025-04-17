@@ -1,10 +1,15 @@
-import { styled } from "@mui/material/styles";
+import { ReactNode } from "react";
 
-const Superscript = styled("sup")(({ theme }) => ({
-  color: theme.palette.success.main,
-  fontSize: "0.6em",
-  marginLeft: "0.2em",
-  fontWeight: "bold",
-}));
+type SuperscriptProps = {
+  children: ReactNode;
+};
+
+const Superscript: React.FC<SuperscriptProps> = ({ children }) => {
+  return (
+    <sup className="text-green-600 text-[0.6em] ml-[0.2em] font-bold">
+      {children}
+    </sup>
+  );
+};
 
 export default Superscript;

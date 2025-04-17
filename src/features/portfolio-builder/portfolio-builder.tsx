@@ -4,10 +4,9 @@ import { useState, useEffect } from "react";
 import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
 import StockSearch from "@/features/stock-search";
 import StockTable from "@/features/stock-table";
-import StockHistoricalDataAggregator from "@/features/stock-historical-data-aggregator";
-import { Box, Stack, Typography } from "@mui/material";
-import StockAggregatedSentiment from "@/features/stock-aggregated-sentiment";
-import InfoIcon from "@mui/icons-material/Info";
+// import StockHistoricalDataAggregator from "@/features/stock-historical-data-aggregator";
+// import StockAggregatedSentiment from "@/features/stock-aggregated-sentiment";
+import { BqIcon } from "@beeq/react/ssr";
 
 const informMesssage =
   "Please select at least one stock in the table to begin the evaluation.";
@@ -56,25 +55,19 @@ const PortfolioBuilder = () => {
         onDeleteAll={handleDeleteAll}
       />
       {addedStocks?.length > 0 && !selectedSymbols?.length && (
-        <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
-          <InfoIcon color="success" sx={{ mr: 1 }} />
-          <Typography variant="body1" color="success.main">
-            {informMesssage}
-          </Typography>
-        </Box>
+        <div className="flex items-center mt-2">
+          <BqIcon className="flex" slot="suffix" name="info" />
+          <p className="text-success-main text-base">{informMesssage}</p>
+        </div>
       )}
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        spacing={2}
-        sx={{ width: "100%", height: "100%" }}
-      >
-        <Box sx={{ flex: 1 }}>
-          <StockHistoricalDataAggregator selectedSymbols={selectedSymbols} />
-        </Box>
-        <Box sx={{ flex: 1 }}>
-          <StockAggregatedSentiment selectedSymbols={selectedSymbols} />
-        </Box>
-      </Stack>
+      <div className="flex flex-col md:flex-row w-full h-full gap-2">
+        <div className="flex-1">
+          {/* <StockHistoricalDataAggregator selectedSymbols={selectedSymbols} /> */}
+        </div>
+        <div className="flex-1">
+          {/* <StockAggregatedSentiment selectedSymbols={selectedSymbols} /> */}
+        </div>
+      </div>
     </>
   );
 };

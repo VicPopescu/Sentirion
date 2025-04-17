@@ -1,17 +1,5 @@
 "use client";
 
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import Paper, { PaperProps } from "@mui/material/Paper";
-import Grid2 from "@mui/material/Grid2";
-import Typography from "@mui/material/Typography";
-import LinearProgress from "@mui/material/LinearProgress";
-import parse from "autosuggest-highlight/parse";
-import { debounce } from "@mui/material/utils";
-import useFetchSymbols, {
-  SymbolData,
-} from "@/lib/api/hooks/get/useFetchSymbols";
 import {
   useEffect,
   useMemo,
@@ -20,10 +8,35 @@ import {
   HTMLAttributes,
   SyntheticEvent,
 } from "react";
+import useFetchSymbols, {
+  SymbolData,
+} from "@/lib/api/hooks/get/useFetchSymbols";
+import parse from "autosuggest-highlight/parse";
+import { BqInput, BqSpinner, BqIcon } from "@beeq/react/ssr";
 
-const CustomPaper = (props: PaperProps) => {
-  return <Paper {...props}>{props.children}</Paper>;
-};
+// Custom debounce function
+export function debounce<T extends (...args: never[]) => void>(
+  fn: T,
+  delay: number
+): ((...args: Parameters<T>) => void) & { cancel?: () => void } {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  const debounced = (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+
+  debounced.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+
+  return debounced;
+}
 
 type StockSearchProps = {
   onOptionSelect: (option: SymbolData) => void;
@@ -38,29 +51,24 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
 
   const handleInputChange = useCallback(
     (_event: SyntheticEvent<Element, Event>, newInputValue: string) => {
-      debounce(() => {
-        setInputValue(newInputValue);
-      }, 300)();
+      setInputValue(newInputValue);
     },
     []
   );
-
-  const debouncedFetch = useMemo(
-    () =>
-      debounce((value: string) => {
-        if (value.length >= 2) {
-          setDebouncedInputValue(value);
-        } else {
-          setDebouncedInputValue("");
-        }
-      }, 400),
-    []
-  );
+  const debouncedFetch = useMemo(() => {
+    return debounce((value: string) => {
+      if (value.length >= 2) {
+        setDebouncedInputValue(value);
+      } else {
+        setDebouncedInputValue("");
+      }
+    }, 400);
+  }, []);
 
   useEffect(() => {
     debouncedFetch(inputValue);
     return () => {
-      debouncedFetch.clear();
+      debouncedFetch.cancel?.();
     };
   }, [inputValue, debouncedFetch]);
 
@@ -79,30 +87,26 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
         <li
           {...optionProps}
           key={`${option.symbol}-${option.description}`}
-          onClick={() => onOptionSelect(option)}
+          className="p-2 cursor-pointer hover:bg-gray-100"
         >
-          <Grid2 container sx={{ alignItems: "center" }}>
-            <Grid2 sx={{ wordWrap: "break-word" }}>
+          <button
+            className="flex flex-col"
+            onClick={() => onOptionSelect(option)}
+          >
+            <div className="flex flex-wrap">
               {parts.map(
                 (part: { text: string; highlight: boolean }, index: number) => (
-                  <Box
-                    key={index}
-                    component="span"
-                    sx={{
-                      fontWeight: part.highlight
-                        ? "fontWeightBold"
-                        : "fontWeightRegular",
-                    }}
+                  <span
+                    key={part.text + index}
+                    className={part.highlight ? "font-bold" : "font-normal"}
                   >
                     {part.text}
-                  </Box>
+                  </span>
                 )
               )}
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                {option.symbol}
-              </Typography>
-            </Grid2>
-          </Grid2>
+            </div>
+            <span className="text-sm text-gray-500">{option.symbol}</span>
+          </button>
         </li>
       );
     },
@@ -110,38 +114,32 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
   );
 
   return (
-    <Box sx={{ position: "relative", maxWidth: 300, width: "100%" }}>
-      <Autocomplete
-        freeSolo
-        getOptionLabel={(option) =>
-          typeof option === "string" ? option : option.description
-        }
-        filterOptions={(x) => x}
-        slots={{
-          paper: CustomPaper,
-        }}
-        options={options || []}
-        includeInputInList
-        filterSelectedOptions
-        noOptionsText="Nothing found"
-        onInputChange={handleInputChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Search for a company or symbol"
-            fullWidth
-            error={!!error}
-            helperText={error ? "Error fetching data" : ""}
-          />
-        )}
-        renderOption={renderOption}
-      />
-      {isLoading && (
-        <LinearProgress
-          sx={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
+    <div className="relative max-w-sm w-full">
+      <div className="relative">
+        <BqInput
+          type="text"
+          placeholder="Search for a company or symbol"
+          value={inputValue}
+          onInput={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, e.target.value)}
+          className={`w-full ${error ? "border-red-500" : "border-gray-300"}`}
         />
+        {error && (
+          <p className="text-red-500 text-sm mt-1 flex items-center">
+            <BqIcon name="error" className="mr-1" /> Error fetching data
+          </p>
+        )}
+      </div>
+      <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full max-h-60 overflow-y-auto">
+        {options.map((option) =>
+          renderOption({ className: "list-none" }, option)
+        )}
+      </ul>
+      {isLoading && (
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center mt-2">
+          <BqSpinner size="small" />
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

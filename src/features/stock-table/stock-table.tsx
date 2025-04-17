@@ -1,15 +1,5 @@
 import { Fragment, MouseEvent, useState } from "react";
 import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
-import {
-  Box,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Typography,
-} from "@mui/material";
 import useFetchSymbolInsight from "@/lib/api/hooks/get/useFetchSymbolInsight";
 import { getComparator, Order } from "./utils/sort";
 import EnhancedTableToolbar from "./components/toolbar";
@@ -32,7 +22,6 @@ const StockTable = ({
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof SymbolData>("description");
   const [selected, setSelected] = useState<readonly string[]>([]);
-  const [dense] = useState(true);
   const { data: insights, isLoading } = useFetchSymbolInsight(
     data.map((d) => d.symbol)
   );
@@ -52,7 +41,6 @@ const StockTable = ({
       const newSelected = data.map((n) => n.symbol);
       setSelected(newSelected);
       setSelectedSymbols(newSelected);
-
       return;
     }
     setSelected([]);
@@ -96,19 +84,18 @@ const StockTable = ({
 
   const getIndicators = (symbol: string) => {
     const insight = insights?.find((insight) => insight.symbol === symbol);
-
     return insight ? insight.indicators : null;
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
+    <div className="w-full">
+      <div className="bg-white shadow-md rounded-md mb-4">
         <EnhancedTableToolbar
           numSelected={selected.length}
           onDeleteAll={handleDeleteAll}
         />
-        <TableContainer sx={{ overflowX: "auto" }}>
-          <Table aria-labelledby="tableTitle" size={dense ? "small" : "medium"}>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
@@ -117,7 +104,7 @@ const StockTable = ({
               onRequestSort={handleRequestSort}
               rowCount={data.length}
             />
-            <TableBody>
+            <tbody className="bg-white divide-y divide-gray-200">
               {rows.map((row: SymbolData, index) => {
                 const isItemSelected = selected.includes(row.symbol);
                 const labelId = `enhanced-table-checkbox-${index}`;
@@ -137,22 +124,26 @@ const StockTable = ({
                   </Fragment>
                 );
               })}
-              {!isLoading && rows.length === 0 ? (
-                <TableRow sx={{ height: 50 }}>
-                  <TableCell colSpan={10}>
-                    <Typography align="center" data-testid="no-data-label">
-                      No data to display
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                <></>
+              {!isLoading && rows.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={10}
+                    className="text-center py-4 text-gray-500"
+                  >
+                    No data to display
+                  </td>
+                </tr>
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-    </Box>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {isLoading && (
+        <div className="flex justify-center mt-4">
+          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-500"></div>
+        </div>
+      )}
+    </div>
   );
 };
 
