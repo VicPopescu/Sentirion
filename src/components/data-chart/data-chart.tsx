@@ -10,7 +10,6 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 import { DATE_FORMAT } from "@/lib/constants/global";
-import theme from "@/theme";
 import NoDataLabel from "@/components/data-chart/components/no-data-label";
 import getRandomColor from "@/lib/utils/get-random-color";
 
@@ -20,9 +19,7 @@ type DataChartProps = {
   isLoading: boolean;
 };
 
-const DataChart = (props: DataChartProps) => {
-  const { formattedChartData, selectedSymbols, isLoading } = props;
-
+const DataChart = ({ formattedChartData, selectedSymbols, isLoading }: DataChartProps) => {
   const chartLineColors = useMemo(() => {
     const colorMap: { [key: string]: string } = {};
     selectedSymbols.forEach((symbol) => {
@@ -83,20 +80,15 @@ const DataChart = (props: DataChartProps) => {
         <Tooltip
           labelFormatter={(label) => format(new Date(label), DATE_FORMAT)}
           contentStyle={{
-            backgroundColor: theme.palette.background.paper,
-            borderColor: theme.palette.divider,
+            backgroundColor: "white",
+            borderColor: "#e5e7eb", // Tailwind's gray-300
           }}
-          itemStyle={{ color: theme.palette.text.primary }}
+          itemStyle={{ color: "#374151" }} // Tailwind's gray-700
           formatter={(value, name) => (
-            <span>
+            <span className="flex items-center">
               <span
-                style={{
-                  display: "inline-block",
-                  width: "10px",
-                  height: "10px",
-                  backgroundColor: chartLineColors[name as string],
-                  marginRight: "5px",
-                }}
+                className="inline-block w-2 h-2 mr-2"
+                style={{ backgroundColor: chartLineColors[name as string] }}
               ></span>
               {value}
             </span>

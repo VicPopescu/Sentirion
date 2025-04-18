@@ -1,7 +1,5 @@
 import Superscript from "@/components/superscript";
 import { useFetchAggregatedSentiment } from "@/lib/api/hooks/get/useFetchAggregatedSentiment";
-import { Box, Typography } from "@mui/material";
-import LinearProgress from "@mui/material/LinearProgress";
 
 type StockAggregatedSentimentProps = {
   selectedSymbols: string[];
@@ -17,23 +15,18 @@ const StockAggregatedSentiment = ({
   }
 
   if (loading) {
-    return <LinearProgress />;
+    return (
+      <div className="w-full">
+        <div className="h-1 bg-blue-500 animate-pulse"></div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <Box
-        sx={{
-          border: "1px solid",
-          borderColor: (theme) => theme.palette.divider,
-          minHeight: "100%",
-          p: 2,
-        }}
-      >
-        <Typography variant="body1" color="error">
-          Error: {error}
-        </Typography>
-      </Box>
+      <div className="border border-gray-300 p-4 min-h-full">
+        <p className="text-red-600 font-medium">Error: {error}</p>
+      </div>
     );
   }
 
@@ -44,7 +37,7 @@ const StockAggregatedSentiment = ({
     );
     return text.split(symbolRegex).map((part, index) =>
       selectedSymbols.includes(part.toUpperCase()) ? (
-        <span key={index} style={{ fontWeight: "bold", color: "green" }}>
+        <span key={index} className="font-bold text-green-600">
           {part}
         </span>
       ) : (
@@ -54,24 +47,15 @@ const StockAggregatedSentiment = ({
   };
 
   return (
-    <Box
-      sx={{
-        border: "1px solid",
-        borderColor: (theme) => theme.palette.divider,
-        minHeight: "100%",
-        p: 2,
-      }}
-    >
-      <Typography variant="h6" gutterBottom>
+    <div className="border border-gray-300 p-4 min-h-full">
+      <h2 className="text-lg font-semibold mb-2">
         Portfolio Evaluation
         <Superscript>[AI]</Superscript>
-      </Typography>
+      </h2>
       {data && (
-        <Typography variant="body1">
-          {highlightSymbols(data.evaluation)}
-        </Typography>
+        <p className="text-gray-700">{highlightSymbols(data.evaluation)}</p>
       )}
-    </Box>
+    </div>
   );
 };
 

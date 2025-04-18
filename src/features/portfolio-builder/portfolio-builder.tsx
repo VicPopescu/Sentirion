@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
 import StockSearch from "@/features/stock-search";
 import StockTable from "@/features/stock-table";
-// import StockHistoricalDataAggregator from "@/features/stock-historical-data-aggregator";
-// import StockAggregatedSentiment from "@/features/stock-aggregated-sentiment";
+import StockHistoricalDataAggregator from "@/features/stock-historical-data-aggregator";
+import StockAggregatedSentiment from "@/features/stock-aggregated-sentiment";
 import { BqIcon } from "@beeq/react/ssr";
 
 const informMesssage =
@@ -62,10 +62,10 @@ const PortfolioBuilder = () => {
       )}
       <div className="flex flex-col md:flex-row w-full h-full gap-2">
         <div className="flex-1">
-          {/* <StockHistoricalDataAggregator selectedSymbols={selectedSymbols} /> */}
+          <StockHistoricalDataAggregator selectedSymbols={selectedSymbols} />
         </div>
         <div className="flex-1">
-          {/* <StockAggregatedSentiment selectedSymbols={selectedSymbols} /> */}
+          <StockAggregatedSentiment selectedSymbols={selectedSymbols} />
         </div>
       </div>
     </>

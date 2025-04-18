@@ -1,6 +1,4 @@
 import useFetchHistoricalData from "@/lib/api/hooks/get/useFetchHistoricalData";
-
-import { Box, Typography } from "@mui/material";
 import { format, subDays, subWeeks, subMonths, subYears } from "date-fns";
 import { useState } from "react";
 import { DATE_FORMAT } from "@/lib/constants/global";
@@ -16,6 +14,7 @@ const StockHistoricalDataAggregator = ({
   selectedSymbols,
 }: StockHistoricalDataProps) => {
   const [range, setRange] = useState("1Y");
+
   const calculateFromDate = (range: string) => {
     const toDate = new Date();
     switch (range) {
@@ -37,6 +36,7 @@ const StockHistoricalDataAggregator = ({
         return format(subYears(toDate, 1), "yyyy-MM-dd");
     }
   };
+
   const from = calculateFromDate(range);
   const to = format(new Date(), "yyyy-MM-dd");
   const { data, isLoading, error } = useFetchHistoricalData(
@@ -47,14 +47,9 @@ const StockHistoricalDataAggregator = ({
 
   if (error) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="350px"
-      >
-        <Typography color="error">{error}</Typography>
-      </Box>
+      <div className="flex justify-center items-center h-[350px] border border-red-500">
+        <p className="text-red-600">{error}</p>
+      </div>
     );
   }
 
@@ -78,34 +73,21 @@ const StockHistoricalDataAggregator = ({
   }
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: 400,
-        border: "1px solid",
-        borderColor: (theme) => theme.palette.divider,
-        pt: 2,
-        pr: 2,
-      }}
-      display="flex"
-      flexDirection="column"
-      position={"relative"}
-    >
+    <div className="w-full h-[400px] border border-gray-300 pt-2 pr-2 flex flex-col relative">
       <LoadingOverlay isLoading={isLoading} />
       <RangeSelect
         isVisible={!isLoading && selectedSymbols.length > 0}
         range={range}
         setRange={setRange}
       />
-
-      <Box height="350px">
+      <div className="h-[350px]">
         <DataChart
           formattedChartData={formattedChartData}
           selectedSymbols={selectedSymbols}
           isLoading={isLoading}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
