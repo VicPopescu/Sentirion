@@ -1,3 +1,5 @@
+"use client";
+
 import { API_ENDPOINTS } from "@/config/api-endpoints";
 import { useState, useEffect } from "react";
 

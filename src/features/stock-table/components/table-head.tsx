@@ -1,8 +1,11 @@
+"use client";
+
 import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
 import { Order } from "../utils/sort";
 import { Indicator } from "@/lib/api/hooks/get/useFetchSymbolInsight";
 import { MouseEvent, useEffect, useRef } from "react";
 import { headCells } from "./head-cell";
+import { BqButton, BqIcon } from "@beeq/react/ssr";
 
 type EnhancedTableProps = {
   numSelected: number;
@@ -65,30 +68,20 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
             }`}
           >
             {headCell.sortable ? (
-              <button
-                className="flex items-center space-x-1 text-gray-700 hover:text-gray-900"
+              <BqButton
+                appearance="text"
                 onClick={createSortHandler(headCell.id)}
               >
                 <span>{headCell.label}</span>
                 {orderBy === headCell.id && (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={`h-4 w-4 ${
-                      order === "desc" ? "rotate-180" : ""
-                    }`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
+                  <BqIcon
+                    slot="suffix"
+                    name="caret-up-bold"
+                    size={14}
+                    className={`${order === "desc" ? "rotate-180" : ""}`}
+                  />
                 )}
-              </button>
+              </BqButton>
             ) : (
               headCell.label
             )}

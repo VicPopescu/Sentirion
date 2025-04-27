@@ -1,6 +1,8 @@
 import Superscript from "@/components/superscript";
 import { Indicator } from "@/lib/api/hooks/get/useFetchSymbolInsight";
 import { SymbolData } from "@/lib/api/hooks/get/useFetchSymbols";
+import { BqButton, BqIcon } from "@beeq/react/ssr";
+import { MouseEvent } from "react";
 
 type CustomTableRowProps = {
   isItemSelected: boolean;
@@ -30,7 +32,6 @@ const CustomTableRow = ({
         isItemSelected ? "bg-blue-50" : "bg-white"
       } cursor-pointer`}
       onClick={() => handleSelect(row.symbol)}
-      role="checkbox"
       aria-checked={isItemSelected}
       tabIndex={-1}
       key={row.symbol}
@@ -67,6 +68,7 @@ const CustomTableRow = ({
           </>
         )}
       </td>
+
       <td className="px-4 py-2">
         {isLoading ? (
           <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
@@ -77,6 +79,7 @@ const CustomTableRow = ({
           </>
         )}
       </td>
+
       <td className="px-4 py-2">
         {isLoading ? (
           <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
@@ -87,6 +90,7 @@ const CustomTableRow = ({
           </>
         )}
       </td>
+
       <td className="px-4 py-2">
         {isLoading ? (
           <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
@@ -97,6 +101,7 @@ const CustomTableRow = ({
           </>
         )}
       </td>
+
       <td className="px-4 py-2">
         {isLoading ? (
           <div className="h-2 bg-gray-200 rounded animate-pulse"></div>
@@ -110,27 +115,18 @@ const CustomTableRow = ({
 
       {/* Delete Button */}
       <td className="px-4 py-2">
-        <button
-          className="text-red-600 hover:text-red-800"
+        <BqButton
+          variant="ghost"
+          size="small"
+          border="xs"
           aria-label="Remove symbol"
           data-testid="remove-symbol"
-          onClick={(event) => handleDelete(event, row.symbol)}
+          onClick={(event: MouseEvent<HTMLButtonElement>) =>
+            handleDelete(event, row.symbol)
+          }
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+          <BqIcon name="trash" />
+        </BqButton>
       </td>
     </tr>
   );
