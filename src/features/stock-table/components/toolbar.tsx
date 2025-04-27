@@ -16,7 +16,7 @@ const EnhancedTableToolbar = ({
       {numSelected > 0 ? (
         <p className="text-blue-700 font-medium">{numSelected} selected</p>
       ) : (
-        <h2 className="text-lg font-semibold text-gray-800">Stocks</h2>
+        <p className="font-semibold text-gray-800 text-xl">Portfolio</p>
       )}
       {numSelected > 0 && (
         <button

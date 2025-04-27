@@ -5,14 +5,14 @@ import {
   useMemo,
   useState,
   useCallback,
-  HTMLAttributes,
   SyntheticEvent,
 } from "react";
 import useFetchSymbols, {
   SymbolData,
 } from "@/lib/api/hooks/get/useFetchSymbols";
-import parse from "autosuggest-highlight/parse";
-import { BqInput, BqSpinner, BqIcon } from "@beeq/react/ssr";
+
+import { BqSpinner, BqIcon, BqSelect } from "@beeq/react/ssr";
+import SearchResultsList from "./components/search-results-list";
 
 // Custom debounce function
 export function debounce<T extends (...args: never[]) => void>(
@@ -45,7 +45,7 @@ type StockSearchProps = {
 const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
   const [inputValue, setInputValue] = useState("");
   const [debouncedInputValue, setDebouncedInputValue] = useState("");
-
+  const minInputLength = 3;
   const { data, isLoading, error } = useFetchSymbols(debouncedInputValue);
   const options: SymbolData[] = data ? data.result : [];
 
@@ -55,9 +55,10 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
     },
     []
   );
+
   const debouncedFetch = useMemo(() => {
     return debounce((value: string) => {
-      if (value.length >= 2) {
+      if (value?.length >= minInputLength) {
         setDebouncedInputValue(value);
       } else {
         setDebouncedInputValue("");
@@ -66,79 +67,56 @@ const StockSearch: React.FC<StockSearchProps> = ({ onOptionSelect }) => {
   }, []);
 
   useEffect(() => {
-    debouncedFetch(inputValue);
+    if (inputValue?.length >= minInputLength) {
+      debouncedFetch(inputValue);
+    } else {
+      debouncedFetch.cancel?.();
+    }
+
     return () => {
       debouncedFetch.cancel?.();
     };
   }, [inputValue, debouncedFetch]);
 
-  const renderOption = useCallback(
-    (optionProps: HTMLAttributes<HTMLLIElement>, option: SymbolData) => {
-      const matches = Array.from(
-        option.description.matchAll(new RegExp(inputValue, "gi"))
-      );
-
-      const parts = parse(
-        option.description,
-        matches.map((match) => [match.index, match.index + match[0].length])
-      );
-
-      return (
-        <li
-          {...optionProps}
-          key={`${option.symbol}-${option.description}`}
-          className="p-2 cursor-pointer hover:bg-gray-100"
-        >
-          <button
-            className="flex flex-col"
-            onClick={() => onOptionSelect(option)}
-          >
-            <div className="flex flex-wrap">
-              {parts.map(
-                (part: { text: string; highlight: boolean }, index: number) => (
-                  <span
-                    key={part.text + index}
-                    className={part.highlight ? "font-bold" : "font-normal"}
-                  >
-                    {part.text}
-                  </span>
-                )
-              )}
-            </div>
-            <span className="text-sm text-gray-500">{option.symbol}</span>
-          </button>
-        </li>
-      );
-    },
-    [inputValue, onOptionSelect]
-  );
-
   return (
     <div className="relative max-w-sm w-full">
       <div className="relative">
-        <BqInput
-          type="text"
+        <BqSelect
           placeholder="Search for a company or symbol"
-          value={inputValue}
-          onInput={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, e.target.value)}
-          className={`w-full ${error ? "border-red-500" : "border-gray-300"}`}
-        />
+          debounceTime={100}
+          keepOpenOnSelect={true}
+          onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            handleInputChange(e, (e.target as any).inputElem.value);
+          }}
+        >
+          <BqIcon name="magnifying-glass" slot="prefix"></BqIcon>
+          <SearchResultsList
+            options={options}
+            inputValue={inputValue}
+            onOptionSelect={onOptionSelect}
+          />
+          {isLoading && (
+            <BqSpinner
+              animation
+              size="small"
+              slot="suffix"
+              claassName="h-[5px]"
+            ></BqSpinner>
+          )}
+          {inputValue?.length > minInputLength &&
+            options.length === 0 &&
+            !isLoading && (
+              <div className="p-2 text-gray-500">No results found.</div>
+            )}
+        </BqSelect>
+
         {error && (
           <p className="text-red-500 text-sm mt-1 flex items-center">
             <BqIcon name="error" className="mr-1" /> Error fetching data
           </p>
         )}
       </div>
-      <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 w-full max-h-60 overflow-y-auto">
-        {options.map((option) =>
-          renderOption({ className: "list-none" }, option)
-        )}
-      </ul>
-      {isLoading && (
-        <div className="absolute bottom-0 left-0 right-0 flex justify-center mt-2">
-          <BqSpinner size="small" />
-        </div>
-      )}
     </div>
   );
 };

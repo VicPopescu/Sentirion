@@ -12,8 +12,11 @@ const informMesssage =
   "Please select at least one stock in the table to begin the evaluation.";
 
 const PortfolioBuilder = () => {
+  const storedStocks = localStorage.getItem("addedStocks");
   const [selectedSymbols, setSelectedSymbols] = useState<string[]>([]);
-  const [addedStocks, setAddedStocks] = useState<SymbolData[]>([]);
+  const [addedStocks, setAddedStocks] = useState<SymbolData[]>(
+    storedStocks ? JSON.parse(storedStocks) : []
+  );
 
   const handleOptionSelect = (option: SymbolData) => {
     setAddedStocks((prevOptions) => {
@@ -33,13 +36,6 @@ const PortfolioBuilder = () => {
   const handleDeleteAll = () => {
     setAddedStocks([]);
   };
-
-  useEffect(() => {
-    const storedStocks = localStorage.getItem("addedStocks");
-    if (storedStocks) {
-      setAddedStocks(JSON.parse(storedStocks));
-    }
-  }, []);
 
   useEffect(() => {
     localStorage.setItem("addedStocks", JSON.stringify(addedStocks));
